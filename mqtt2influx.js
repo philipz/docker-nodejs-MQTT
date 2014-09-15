@@ -22,6 +22,14 @@ client.on('message', function (topic, message) {
 			if(err) {
 				console.error('Influx writePoint Error:' + err);
 				throw err;
+				dbclient = influx({
+                                  // or single-host configuration
+                                    host : 'YOUR_INFLUXDB',
+                                    port : 8086, // optional, default 8086
+                                    username : 'USERNAME',
+                                    password : 'PASSWORD',
+                                    database : 'DATABASE'
+                                });
 			}
 		});
 	}
