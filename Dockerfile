@@ -1,8 +1,8 @@
-From phusion/baseimage:0.9.12
+From phusion/baseimage:latest
 MAINTAINER Philipz <philipzheng@gmail.com>
 
 # Install NodeJS
-RUN apt-get -qq update
+RUN apt-get -qq update && apt-get -y upgrade
 RUN apt-get install -y nodejs
 RUN apt-get install -y npm
 # Install Library
