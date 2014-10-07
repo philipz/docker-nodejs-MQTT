@@ -1,5 +1,5 @@
 var mqtt = require('mqtt')
-  , client = mqtt.connect('mqtt://USRNAME:PASSWORD@YOUR_MQTT_SERVER?clientId=CLIENT_ID');
+  , client = mqtt.connect('mqtt://user:tradingbot@m2m.tradingbot.com.tw?clientId=nodejs_MQTT2influx');
 
 var influx = require('influx');
 var dbclient = influx({
@@ -11,31 +11,13 @@ var dbclient = influx({
   database : 'DATABASE'
 });
 
-client.subscribe('TOPIC/#');
+client.subscribe('BOT/#');
 
 client.on('message', function (topic, message) {
-	var result  = toPoint(message);
-	if (result) {
-		var seriesName = result[0];
-		var point = result[1];
-		dbclient.writePoint(seriesName, point, function(err) {
-			if(err) {
-				console.error('Influx writePoint Error:' + err);
-				throw err;
-				dbclient = influx({
-                                  // or single-host configuration
-                                    host : 'YOUR_INFLUXDB',
-                                    port : 8086, // optional, default 8086
-                                    username : 'USERNAME',
-                                    password : 'PASSWORD',
-                                    database : 'DATABASE'
-                                });
-			}
-		});
-	}
+	toPoint(message, func_influx);
 });
 
-function toPoint(message) {
+function toPoint(message, callback) {
 	var temp = message.split(",");
 	if (temp.length > 10) {
 	   try {
@@ -57,6 +39,7 @@ function toPoint(message) {
 		Percent = Percent.toFixed(5);
 		var points = {"Bid": Bid, "Bc": Bc, "Ask": Ask, "Ac": Ac, "close": close, "high": high, "low": low,
 				"TickQty": TickQty, "TQty": TQty, "Ref": Ref, "Percent": Percent};
+		callback && callback(name, points);
 		return [name , points]; 
 	   } catch (ex) {
    		console.error(ex);
@@ -65,3 +48,21 @@ function toPoint(message) {
 		return null;
 	}
 }
+
+var func_influx=function influxwrite(seriesName, point, dbclient) {
+        dbclient.writePoint(seriesName, point, function(err) {
+        if(err) {
+                console.error('Influx writePoint Error:' + err);
+                //throw err;
+                dbclient = influx({
+                // or single-host configuration
+		host : 'YOUR_INFLUXDB',
+		port : 8086, // optional, default 8086
+		username : 'USERNAME',
+		password : 'PASSWORD',
+		database : 'DATABASE'
+                });
+                influxwrite(seriesName, point, dbclient);
+        }       
+        });     
+}    
