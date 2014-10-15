@@ -36,6 +36,9 @@ function toPoint(message, callback) {
 		var TQty = parseInt(temp[9]);
 		var Ref = parseFloat(temp[10]);
 		var Percent = ((close / Ref) - 1) * 100;
+                if (Percent == Infinity || Percent == NaN) {
+                	return null;
+                }
 		Percent = Percent.toFixed(5);
 		var points = {"Bid": Bid, "Bc": Bc, "Ask": Ask, "Ac": Ac, "close": close, "high": high, "low": low,
 				"TickQty": TickQty, "TQty": TQty, "Ref": Ref, "Percent": Percent};
