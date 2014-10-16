@@ -11,7 +11,7 @@ var dbclient = influx({
   database : 'DATABASE'
 });
 
-client.subscribe('BOT/#');
+client.subscribe('TOPIC/#');
 
 client.on('message', function (topic, message) {
 	toPoint(message, func_influx);
@@ -42,7 +42,7 @@ function toPoint(message, callback) {
 		Percent = Percent.toFixed(5);
 		var points = {"Bid": Bid, "Bc": Bc, "Ask": Ask, "Ac": Ac, "close": close, "high": high, "low": low,
 				"TickQty": TickQty, "TQty": TQty, "Ref": Ref, "Percent": Percent};
-		callback && callback(name, points);
+		callback && callback(name, points, dbclient);
 		return [name , points]; 
 	   } catch (ex) {
    		console.error(ex);
