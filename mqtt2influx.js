@@ -1,5 +1,5 @@
 var mqtt = require('mqtt')
-  , client = mqtt.connect('mqtt://user:tradingbot@m2m.tradingbot.com.tw?clientId=nodejs_MQTT2influx');
+  , client = mqtt.connect('mqtt://username:password@m2m.tradingbot.com.tw?clientId=nodejs_MQTT2influx');
 
 var influx = require('influx');
 var dbclient = influx({
